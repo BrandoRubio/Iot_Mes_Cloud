@@ -1,0 +1,7 @@
+{
+  "name": "IoT_Mes_Cloud",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
