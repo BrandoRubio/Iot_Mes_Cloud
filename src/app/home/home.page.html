@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
   <ion-grid>
     <ion-row>
-      <ion-col size="12" size-sm="12" size-md="6" size-lg="6" size-xl="4">
+      <!--ion-col size="12" size-sm="12" size-md="6" size-lg="6" size-xl="4">
         <ion-card>
           <ion-card-header>
             <ion-card-title>Chart</ion-card-title>
@@ -19,12 +19,34 @@
             <app-chart-widget [sensorData]="sensorData"></app-chart-widget>
           </ion-card-content>
         </ion-card>
+      </ion-col-->
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="6" size-xl="4">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>Chart</ion-card-title>
+            <ion-card-title>Mapa de calor</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <app-heatmap [data]="miData"></app-heatmap>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="6" size-xl="4">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Lineas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <app-spline [data]="splineData"></app-spline>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="6" size-xl="4">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Lineas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <app-bar></app-bar>
           </ion-card-content>
         </ion-card>
       </ion-col>

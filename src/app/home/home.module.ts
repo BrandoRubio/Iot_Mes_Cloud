@@ -10,6 +10,8 @@ import { HomePage } from './home.page';
 import { ChartWidgetComponent } from '../components/chart-widget/chart-widget.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { HeatmapComponent } from '../components/heatmap/heatmap.component';
+import { SplineComponent } from '../components/spline/spline.component';
+import { BarComponent } from '../components/bar/bar.component';
 
 @NgModule({
   imports: [
@@ -19,7 +21,9 @@ import { HeatmapComponent } from '../components/heatmap/heatmap.component';
     HomePageRoutingModule,
     ChartWidgetComponent,
     HeatmapComponent,
-    NgApexchartsModule
+    NgApexchartsModule,
+    SplineComponent,
+    BarComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [HomePage]

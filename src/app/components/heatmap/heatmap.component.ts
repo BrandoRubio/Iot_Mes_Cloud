@@ -1,21 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges } from '@angular/core';
-import {
-  ApexAxisChartSeries,
-  ApexTitleSubtitle,
-  ApexDataLabels,
-  ApexChart,
-  NgApexchartsModule,
-  ApexXAxis,
-  ApexYAxis,
-  ApexPlotOptions,
-  ApexTooltip
-} from "ng-apexcharts";
-
+import { ApexAxisChartSeries, ApexTitleSubtitle, ApexDataLabels, ApexChart, NgApexchartsModule, ApexXAxis, ApexYAxis, ApexPlotOptions, ApexTooltip } from "ng-apexcharts";
 export interface HeatmapData {
   series?: {
     name: string;
-    data: Array<{x: string, y: number}>;
+    data: Array<{ x: string, y: number }>;
   }[];
   title?: string;
   colors?: string[];
@@ -113,7 +102,7 @@ export class HeatmapComponent implements OnInit, OnChanges {
     if (changes['data'] && !changes['data'].firstChange) {
       this.updateChart();
     }
-    
+
     // Forzar actualización cuando refreshData cambia a true
     if (changes['refreshData'] && changes['refreshData'].currentValue === true) {
       this.updateChart();
@@ -134,29 +123,31 @@ export class HeatmapComponent implements OnInit, OnChanges {
     if (this.data.series) {
       this.chartOptions.series = this.data.series;
     }
-    
+
     if (this.data.title) {
       this.chartOptions.title = {
         ...this.chartOptions.title,
         text: this.data.title
       };
     }
-    
+
     if (this.data.colors) {
       this.chartOptions.colors = this.data.colors;
     }
-    
+
     if (this.data.height) {
       this.chartOptions.chart = {
         ...this.chartOptions.chart,
         height: this.data.height
       };
     }
+    console.log(this.chartOptions);
+    /*console.log(this.chart);
 
     // Si el gráfico ya está inicializado, actualizar
     if (this.chart && this.chart.updateOptions) {
       this.chart.updateOptions(this.chartOptions);
-    }
+    }*/
   }
 
   loadDefaultData() {
@@ -175,7 +166,7 @@ export class HeatmapComponent implements OnInit, OnChanges {
         data: this.generateData(18, { min: 0, max: 90 })
       }
     ];
-    
+
     // Si el gráfico ya está inicializado, actualizar
     if (this.chart && this.chart.updateOptions) {
       this.chart.updateOptions(this.chartOptions);

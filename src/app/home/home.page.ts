@@ -135,6 +135,27 @@ export class HomePage implements OnInit {
     ],
     title: "Mapa de calor",
   }
+  splineData = {
+    series: [
+      {
+        name: "Ventas",
+        data: [31, 40, 1, 51, 42, 7, 79]
+      },
+      {
+        name: "Verntas 2",
+        data: [31, 40, 28, 47, 42, 109, 100]
+      }
+    ],
+    //title: "Mi gráfico de líneas",
+    categories: ["2018-09-19T00:00:00.000Z",
+      "2018-09-19T01:30:00.000Z",
+      "2018-09-19T02:30:00.000Z",
+      "2018-09-19T03:30:00.000Z",
+      "2018-09-19T04:30:00.000Z",
+      "2018-09-19T05:30:00.000Z",
+      "2018-09-19T06:30:00.000Z"]
+    //tooltipFormat: "MMM yyyy"
+  };
   constructor(
     private wsService: WebSocketService,
     private api: ApiService,
