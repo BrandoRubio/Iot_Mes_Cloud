@@ -1,0 +1,10 @@
+<div class="chart-container">
+  <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions"> </canvas>
+  <ion-item lines="none">
+    <ion-buttons slot="end">
+      <ion-button slot="end" fill="clear" (click)="resetZoom()">
+        <ion-icon name="expand" slot="icon-only" color="primary"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-item>
+</div>
