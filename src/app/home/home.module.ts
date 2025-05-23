@@ -12,6 +12,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { HeatmapComponent } from '../components/heatmap/heatmap.component';
 import { SplineComponent } from '../components/spline/spline.component';
 import { BarComponent } from '../components/bar/bar.component';
+import { NgxColorsModule } from 'ngx-colors';
 
 @NgModule({
   imports: [
@@ -23,9 +24,10 @@ import { BarComponent } from '../components/bar/bar.component';
     HeatmapComponent,
     NgApexchartsModule,
     SplineComponent,
-    BarComponent
+    BarComponent,
+    NgxColorsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [HomePage]
 })
-export class HomePageModule {}
+export class HomePageModule { }

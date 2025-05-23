@@ -1,9 +1,28 @@
-<div id="chart">
-  <apx-chart
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [dataLabels]="chartOptions.dataLabels"
-    [title]="chartOptions.title"
-    [colors]="chartOptions.colors"
-  ></apx-chart>
-</div>
+<ion-card>
+  <ion-card-header>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button id="popover-heatmap-${{data['id']}}">
+          <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-card-title>{{title}} </ion-card-title>
+    </ion-toolbar>
+  </ion-card-header>
+  <ion-card-content>
+    <apx-chart #heatmapChart [series]="chartOptions.series" [chart]="chartOptions.chart"
+      [dataLabels]="chartOptions.dataLabels" [title]="chartOptions.title" [colors]="chartOptions.colors"></apx-chart>
+  </ion-card-content>
+</ion-card>
+<ion-popover trigger="popover-heatmap-${{data['id']}}" [dismissOnSelect]="true" showBackdrop="false">
+  <ng-template>
+    <ion-content>
+      <ion-list>
+        <ion-item [button]="true" [detail]="false">Editar <ion-icon slot="start"
+            name="pencil" color="success"></ion-icon></ion-item>
+        <ion-item [button]="true" [detail]="false" (click)="Delete()">Eliminar <ion-icon slot="start"
+            name="trash" color="danger"></ion-icon></ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

@@ -4,15 +4,14 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class WebSocketService {
-  //server = "ws://localhost:3000"
-  server = "wss://sensores-api.onrender.com"
-  Suscribe(dispositivo: string, onMessage: (data: any) => void): Promise<WebSocket> {
-    console.log(JSON.stringify({ tipo: 'suscribirse', dispositivo }));
-    
+  server = "ws://localhost:3000"
+  //server = "wss://sensores-api.onrender.com"
+  suscribe(sensor_id: string, onMessage: (data: any) => void): Promise<WebSocket> {
+    //console.log(JSON.stringify({ type: 'suscribe', sensor_id }));
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(this.server);
       ws.onopen = () => {
-        ws.send(JSON.stringify({ tipo: 'suscribirse', dispositivo }));
+        ws.send(JSON.stringify({ type: 'suscribe', sensor_id }));
         resolve(ws);
       };
       ws.onerror = (err) => {
@@ -22,8 +21,8 @@ export class WebSocketService {
       ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
-          if (msg.tipo === 'nuevo_dato') {
-            onMessage(msg.data);
+          if (msg.type === 'new_sensor_data') {
+            onMessage(msg);
           }
         } catch (e) {
           console.error('Error al procesar mensaje:', e);

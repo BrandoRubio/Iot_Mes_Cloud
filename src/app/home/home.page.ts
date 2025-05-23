@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { WebSocketService } from '../services/web-socket.service';
+import { UiService } from '../services/ui.service';
+import { ColorEvent } from 'ngx-color';
 
 interface SensorData {
   id: number;
@@ -18,13 +20,20 @@ interface SensorData {
 })
 export class HomePage implements OnInit {
   sensorData: SensorData[] = [];
-  newSensorData: SensorData = {
-    "id": 1823,
-    "dispositivo": "F0:08:D1:C5:B8:CC",
-    "tipo_sensor": "temperatura",
-    "valor": "25.80",
-    "fecha_hora": "2025-05-09T20:08:17.710Z"
-  };
+  isModalOpen = false;
+  newWidgetData: any = {
+    name: "",
+    device: "",
+    sensors: [
+      {
+        device: "",
+        id: "",
+        color: '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')
+      }
+    ],
+    widgetType: "",
+    chartType: ""
+  }
   miData = {
     series: [
       {
@@ -135,30 +144,38 @@ export class HomePage implements OnInit {
     ],
     title: "Mapa de calor",
   }
-  splineData = {
+  refreshData = false
+  splineData: any = {
     series: [
       {
         name: "Ventas",
         data: [31, 40, 1, 51, 42, 7, 79]
       },
       {
-        name: "Verntas 2",
+        name: "Ventas 2",
         data: [31, 40, 28, 47, 42, 109, 100]
       }
     ],
     //title: "Mi gráfico de líneas",
-    categories: ["2018-09-19T00:00:00.000Z",
+    categories: [//Solo formato de fechas
+      "2018-09-19T00:00:00.000Z",
       "2018-09-19T01:30:00.000Z",
       "2018-09-19T02:30:00.000Z",
       "2018-09-19T03:30:00.000Z",
       "2018-09-19T04:30:00.000Z",
       "2018-09-19T05:30:00.000Z",
-      "2018-09-19T06:30:00.000Z"]
+      "2018-09-19T06:30:00.000Z"],
+    type: "area"
     //tooltipFormat: "MMM yyyy"
   };
+  user = "1221"
+  widgets: any = []
+  devices: any = []
+
   constructor(
     private wsService: WebSocketService,
     private api: ApiService,
+    private ui: UiService,
     private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -166,28 +183,29 @@ export class HomePage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.Suscribe()
-    this.api.Get("/sensores?cantidad=20").then((response: any) => {
-      console.log(response);
-      localStorage.setItem("response", response.status)
-      this.sensorData = response.data/*response.data.map((item: any) => ({
+    this.api.Get("/widgets/1221").then((response: any) => {
+      this.widgets = response.data.dashboards.map((item: any, index: number) => ({
+        index: index,
         id: item.id,
-        dispositivo: item.dispositivo,
-        tipo_sensor: item.tipo_sensor,
-        valor: item.valor,
-        fecha_hora: item.fecha_hora
-      }));*/
-      this.changeDetector.detectChanges();
+        name: item.name,
+        jsonParams: { ...item.parameters, id: item.id, name: item.name },
+        refreshData: true
+      }));
     })
+    this.api.Get("/devices/1221").then((response: any) => {
+      this.devices = response.data
+      this.newWidgetData.device = response.data[0].deviceId + ""
+      //console.log(response.data[0].deviceId);
+    })
+    /*this.api.GetTEST().then((response: any) => {
+      console.log(response);
+      
+      //console.log(response.data[0].deviceId);
+    })*/
 
-    const dispositivo = 'F0:08:D1:C5:B8:CC';
-    /*this.wsService.Suscribe(dispositivo, (data) => {
-      //console.log(data);
-      const objSensorData: SensorData = data
-      this.sensorData = [...this.sensorData, objSensorData];
-
-      this.changeDetector.detectChanges();
-      //this.chartData.push(data); // o actualizar UI, etc.
+    /*const sensor_id = '1';
+    this.wsService.suscribe(sensor_id, (data) => {
+      console.log(data.value);
     }).then(ws => {
       //console.log('Conectado al socket');
     }).catch(err => {
@@ -222,5 +240,93 @@ export class HomePage implements OnInit {
       i++;
     }
     return series;
+  }
+  changeData() {
+    this.splineData.type = this.splineData.type == "bar" ? "area" : "bar"
+    this.miData.series.push({
+      name: "AQ",
+      data: this.generateData(8, {
+        min: 0,
+        max: 90
+      })
+    })
+    this.refreshData = true
+    setTimeout(() => {
+      this.refreshData = false;
+    }, 100);
+    this.changeDetector.detectChanges()
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+    this.newWidgetData.name = "Widget " + (this.widgets.length + 1)
+    this.newWidgetData.widgetType = "chart"
+    this.newWidgetData.chartType = "area"
+  }
+  async addNewSensor() {
+    this.newWidgetData.sensors.push({ device: "", id: "", color: '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0') })
+
+  }
+  getSensorsForDevice(deviceId: number) {
+    const device = this.devices.find((d: any) => d.deviceId === deviceId);
+    return device ? device.sensors : [];
+  }
+  async addNewWidget() {
+    console.log(this.newWidgetData);
+
+    //if (await this.ui.ShowAlert("¿Deseas agregar el nuevo widget?", "Alerta", "Atrás", "Agregar")) {
+    let body: any = {}
+    if (this.newWidgetData.widgetType == 'chart') {
+      body = {
+        "user_id": this.user,
+        "name": this.newWidgetData.name,
+        "parameters": {
+          "widgetType": this.newWidgetData.widgetType,
+          "chartType": this.newWidgetData.chartType,
+          "sensors": this.newWidgetData.sensors,
+        }
+      }
+    } else if (this.newWidgetData.widgetType == 'heatmap') {
+      body = {
+        "user_id": this.user,
+        "name": this.newWidgetData.name,
+        "parameters": {
+          "widgetType": this.newWidgetData.widgetType
+        }
+      }
+    }
+    console.log(body);
+    this.api.Post("/widgets", body).then((response: any) => {
+      this.setOpen(false)
+      console.log(response);
+      body.parameters.index = response.data.id
+      body.parameters.id = response.data.id
+      body.parameters.name = response.data.name
+      body.jsonParams = body.parameters
+      this.widgets.push(body)
+      this.newWidgetData = {
+        name: "",
+        device: "",
+        sensors: [
+          {
+            device: "",
+            id: "",
+            color: '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')
+          }
+        ],
+        widgetType: "",
+        chartType: ""
+      }
+      this.changeDetector.detectChanges()
+    })
+    //}
+  }
+  async removeWidget(id: number) {
+    if (await this.ui.ShowAlert("¿Deseas eliminar este dashboard?", "Alerta", "Atrás", "Eliminar")) {
+      this.api.Delete("/widgets/" + id).then((response: any) => {
+        this.widgets = this.widgets.filter((w: any) => w.id !== id);
+        this.changeDetector.detectChanges()
+      })
+    }
   }
 }

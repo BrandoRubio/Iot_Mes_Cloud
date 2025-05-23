@@ -7,14 +7,14 @@ import { Toast } from '@capacitor/toast';
   providedIn: 'root'
 })
 export class ApiService {
-  //server = "http://localhost:3000"
-  server = "https://sensores-api.onrender.com"
+  server = "http://localhost:3000"
+  //server = "https://sensores-api.onrender.com"
   constructor(public loadingCtrl: LoadingController) { }
 
   async Get(endPoint: string) {
-    this.ShowLoading("Procesando")
+    //this.ShowLoading("Procesando")
     const auth = {
-      url: this.server+"/api" + endPoint,
+      url: this.server + "/api" + endPoint,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -26,7 +26,82 @@ export class ApiService {
     } else if (response.status == 401) {
       this.ShowToast("Error de autenticación")
     }
+    //await this.loadingCtrl.getTop() ? this.loadingCtrl.dismiss() : null
+    return response
+  }
+  async GetTEST() {
+    //this.ShowLoading("Procesando")
+    const auth = {
+      url: "https://jsonplaceholder.typicode.com/todos/1",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const response: HttpResponse = await CapacitorHttp.get(auth);
+    if (response.status == 200) {
+    } else if (response.status == 404) {
+      this.ShowToast("Error en la URL")
+    } else if (response.status == 401) {
+      this.ShowToast("Error de autenticación")
+    }
+    //await this.loadingCtrl.getTop() ? this.loadingCtrl.dismiss() : null
+    return response
+  }
+
+  async Post(endPoint: string, body: any) {
+    //this.ShowLoading("Procesando")
+    const auth = {
+      url: this.server + "/api" + endPoint,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: body
+    };
+    const response: HttpResponse = await CapacitorHttp.post(auth);
+    if (response.status == 200) {
+    } else if (response.status == 404) {
+      this.ShowToast("Error en la URL")
+    } else if (response.status == 401) {
+      this.ShowToast("Error de autenticación")
+    }
+    //await this.loadingCtrl.getTop() ? this.loadingCtrl.dismiss() : null
+    return response
+  }
+  async Delete(endPoint: string) {
+    this.ShowLoading("Procesando")
+    const auth = {
+      url: this.server + "/api" + endPoint,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    const response: HttpResponse = await CapacitorHttp.delete(auth);
+    if (response.status == 200) {
+    } else if (response.status == 404) {
+      this.ShowToast("Error en la URL")
+    } else if (response.status == 401) {
+      this.ShowToast("Error de autenticación")
+    }
     await this.loadingCtrl.getTop() ? this.loadingCtrl.dismiss() : null
+    return response
+  }
+  async Update(endPoint: string, body: any) {
+    //this.ShowLoading("Procesando")
+    const auth = {
+      url: this.server + "/api" + endPoint,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: body
+    };
+    const response: HttpResponse = await CapacitorHttp.put(auth);
+    if (response.status == 200) {
+    } else if (response.status == 404) {
+      this.ShowToast("Error en la URL")
+    } else if (response.status == 401) {
+      this.ShowToast("Error de autenticación")
+    }
+    //await this.loadingCtrl.getTop() ? this.loadingCtrl.dismiss() : null
     return response
   }
 

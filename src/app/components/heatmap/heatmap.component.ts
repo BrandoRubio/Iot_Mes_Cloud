@@ -1,15 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButtons, IonButton, IonIcon, IonToolbar, IonPopover, IonContent, IonList, IonItem } from '@ionic/angular/standalone';
 import { ApexAxisChartSeries, ApexTitleSubtitle, ApexDataLabels, ApexChart, NgApexchartsModule, ApexXAxis, ApexYAxis, ApexPlotOptions, ApexTooltip } from "ng-apexcharts";
 export interface HeatmapData {
-  series?: {
-    name: string;
-    data: Array<{ x: string, y: number }>;
-  }[];
-  title?: string;
-  colors?: string[];
-  height?: number;
-  width?: number;
+  [key: string]: any;
 }
 
 export type ChartOptions = {
@@ -28,15 +22,17 @@ export type ChartOptions = {
 @Component({
   selector: 'app-heatmap',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, NgApexchartsModule, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButtons, IonButton, IonIcon, IonToolbar, IonPopover, IonContent, IonList, IonItem],
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
 export class HeatmapComponent implements OnInit, OnChanges {
-  @ViewChild("chart") chart: any;
+  @ViewChild("heatmapChar") chart: any;
   @Input() data: HeatmapData = {};
   @Input() refreshData: boolean = false;
+  @Output() remove = new EventEmitter<number>();
   public chartOptions: ChartOptions;
+  title = "Heatmap"
 
   constructor() {
     // Configuración inicial predeterminada
@@ -50,37 +46,14 @@ export class HeatmapComponent implements OnInit, OnChanges {
         enabled: false
       },
       colors: [
-        "#F3B415",
-        "#F27036",
-        "#663F59",
-        "#6A6E94",
-        "#4E88B4",
-        "#00A7C6",
-        "#18D8D8",
-        "#A9D794",
-        "#46AF78",
-        "#A93F55",
-        "#8C5E58",
-        "#2176FF",
-        "#33A1FD",
-        "#7A918D",
-        "#BAFF29"
+        "#008FFB"
       ],
       xaxis: {
         type: "category",
-        categories: [
-          "10:00",
-          "10:30",
-          "11:00",
-          "11:30",
-          "12:00",
-          "12:30",
-          "01:00",
-          "01:30"
-        ]
+        categories: []
       },
       title: {
-        text: "HeatMap Chart (Different color shades for each series)"
+        text: "Mapa de calor"
       },
       grid: {
         padding: {
@@ -110,17 +83,12 @@ export class HeatmapComponent implements OnInit, OnChanges {
   }
 
   initializeChart() {
-    if (this.data) {
-      this.updateChart();
-    } else {
-      // Si no hay datos proporcionados, usar datos de ejemplo
-      this.loadDefaultData();
-    }
+    this.loadDefaultData();
   }
 
   updateChart() {
     // Actualizar solo las propiedades que vienen en los datos de entrada
-    if (this.data.series) {
+    /*if (this.data.series) {
       this.chartOptions.series = this.data.series;
     }
 
@@ -155,17 +123,68 @@ export class HeatmapComponent implements OnInit, OnChanges {
     this.chartOptions.series = [
       {
         name: "Metric1",
-        data: this.generateData(18, { min: 0, max: 90 })
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
       },
       {
         name: "Metric2",
-        data: this.generateData(18, { min: 0, max: 90 })
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
       },
       {
         name: "Metric3",
-        data: this.generateData(18, { min: 0, max: 90 })
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric4",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric5",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric6",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric7",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric8",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
+      },
+      {
+        name: "Metric9",
+        data: this.generateData(18, {
+          min: 0,
+          max: 100
+        })
       }
-    ];
+    ]
 
     // Si el gráfico ya está inicializado, actualizar
     if (this.chart && this.chart.updateOptions) {
@@ -188,5 +207,8 @@ export class HeatmapComponent implements OnInit, OnChanges {
       i++;
     }
     return series;
+  }
+  Delete() {
+    this.remove.emit(this.data['id']);
   }
 }

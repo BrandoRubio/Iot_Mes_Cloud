@@ -1,0 +1,159 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Dispositivos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let device of devices">
+        <ion-card color="light" (click)="openAsEditDevice(device)" class="card-button ion-activatable ripple-parent"
+          button><ion-ripple-effect></ion-ripple-effect>
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="hardware-chip-outline" slot="start" style="margin-right: 8px;"></ion-icon>
+              <span style="color: var(--ion-color-primary);">{{ device.deviceName }}</span>
+            </ion-card-title>
+            <ion-note color="medium">ID: <strong>{{ device.deviceId }}</strong></ion-note>
+            <ion-note color="medium">Mac: <strong>{{device.deviceMac}}</strong></ion-note>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row justify-content-start>
+              <ion-col size="auto" *ngFor="let sensor of device.sensors" style="text-align: center;">
+                <ion-button fill="clear" size="large" shape="round" [title]="sensor.name">
+                  <ion-icon [name]="sensor.icon" slot="icon-only"></ion-icon>
+                </ion-button>
+                <div class="sensor-value">
+                  {{ sensor.lastValue !== null ? sensor.lastValue : '—' }}
+                </div>
+              </ion-col>
+              <ion-col size="auto" style="text-align: center;">
+                <ion-button fill="clear" size="large" shape="round" title="Agregar nuevo sensor">
+                  <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <div class="sensor-value">
+                  Agregar
+                </div>
+              </ion-col>
+              <!--ion-col size="auto" *ngFor="let sensor of device.sensors" class="ion-text-center">
+                </ion-col-->
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
+        <ion-card color="light" (click)="openAsNewDevice()" class="card-button ion-activatable ripple-parent"
+          button><ion-ripple-effect></ion-ripple-effect>
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="hardware-chip-outline" slot="start" style="margin-right: 8px;"></ion-icon>
+              <span style="color: var(--ion-color-primary);">Nuevo dispositivo</span>
+            </ion-card-title>
+            <ion-note color="medium">ID: <strong>-</strong></ion-note>
+            <ion-note color="medium">Mac: <strong>-</strong></ion-note>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row class="ion-justify-content-center">
+              <ion-col size="auto" class="ion-text-center">
+                <ion-button fill="clear" size="large" shape="round" title="Agregar nuevo dispositivo">
+                  <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <div class="sensor-value">
+                  Agregar dispositivo
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-modal [isOpen]="isModalOpen" (ionModalWillDismiss)="isModalOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Agregar nuevo dispositivo</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isModalOpen = false">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input type="text" placeholder="" [(ngModel)]="device.deviceName" style="text-align: right;">
+            <div slot="label"><ion-text color="primary">Nombre:</ion-text></div>
+          </ion-input>
+          <ion-buttons slot="end">
+            <ion-button shape="round" title="copiar" color="primary" (click)="copyFromInputName()">
+              <ion-icon name="document-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button shape="round" title="pegar" color="primary" (click)="pasteOnInputName()">
+              <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" placeholder="" [(ngModel)]="device.deviceMac" style="text-align: right;">
+            <div slot="label"><ion-text color="primary">Mac:</ion-text></div>
+          </ion-input>
+          <ion-buttons slot="end">
+            <ion-button shape="round" title="copiar" color="primary" (click)="copyFromInputMac()">
+              <ion-icon name="document-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button shape="round" title="pegar" color="primary" (click)="pasteOnInputMac()">
+              <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+        <ion-item *ngFor="let sensor of device.sensors" lines="full">
+          <ion-grid>
+            <ion-row class="ion-align-items-center">
+              <ion-col size="12" size-md="6">
+                <ion-input type="text" placeholder="" [(ngModel)]="sensor.name" style="text-align: right;">
+                  <div slot="label">
+                    <ion-text color="primary">Nombre:</ion-text>
+                  </div>
+                </ion-input>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="2" *ngFor="let icon of iconList" class="ion-text-center">
+                      <ion-button fill="clear" shape="round" size="large" expand="block"
+                        (click)="selectIcon(sensor, icon.name)" [title]="icon.name"
+                        [color]="sensor.icon === icon.name ? 'primary' : 'medium'">
+                        <ion-icon [name]="icon.name" slot="icon-only"></ion-icon>
+                      </ion-button>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item lines="none">
+        </ion-item>
+        <div class="ion-text-center">
+          <ion-button fill="outline" (click)="addNewSensor()">
+            <ion-icon slot="start" name="add"></ion-icon>
+            Agregar sensor</ion-button>
+        </div>
+        <ion-fab slot="fixed" vertical="bottom" horizontal="start" *ngIf="!device.isNew">
+          <ion-fab-button (click)="deleteDevice()" color="danger">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+          <ion-fab-button (click)="device.isNew ? addNewDevice() : updateDevice()">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

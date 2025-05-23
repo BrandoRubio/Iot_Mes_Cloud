@@ -1,18 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import {
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexDataLabels,
-  ApexPlotOptions,
-  ApexYAxis,
-  ApexTitleSubtitle,
-  ApexXAxis,
-  ApexFill,
-  NgApexchartsModule,
-  ChartComponent
-} from "ng-apexcharts";
-
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexPlotOptions, ApexYAxis, ApexTitleSubtitle, ApexXAxis, ApexFill, NgApexchartsModule, ChartComponent } from "ng-apexcharts";
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -23,7 +11,17 @@ export type ChartOptions = {
   fill: ApexFill;
   title: ApexTitleSubtitle;
 };
-
+export interface Data {
+  series?: {
+    name: string;
+    data: number[];
+  }[];
+  title?: string;
+  categories?: string[];
+  height?: number;
+  width?: number;
+  tooltipFormat?: string;
+}
 @Component({
   selector: 'app-bar',
   standalone: true,
