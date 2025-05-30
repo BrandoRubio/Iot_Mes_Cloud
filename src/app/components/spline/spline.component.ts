@@ -98,7 +98,7 @@ export class SplineComponent implements OnInit {
       },
       yaxis: {
         min: 20,  // Valor mínimo en el eje Y
-        max: 60,  // Valor máximo en el eje Y
+        max: 70,  // Valor máximo en el eje Y
       },
       tooltip: {
         x: {
@@ -127,8 +127,9 @@ export class SplineComponent implements OnInit {
     const sensores = this.widgetData.sensors;
     const seriesData = await Promise.all(
       sensores.map((sensor: any) =>
-        this.api.Get(`/sensorData/${sensor.id}?limit=100`).then((response: any) => ({
+        this.api.Get(`/sensorData/${sensor.id}?start=2025-05-28T00:00:00&end=2025-05-30T00:00:00`).then((response: any) => ({
           color: sensor.color,
+          group: sensor.id, // ID único
           name: response.data.sensor,
           data: response.data.data.map((item: any) => ({
             x: new Date(item.time).getTime(),
@@ -148,15 +149,17 @@ export class SplineComponent implements OnInit {
       const sensor_id = sensor.id;
       this.ws.suscribe(sensor_id, (data) => {
         const timestamp = new Date(data.value.time).getTime();
-        const serie: any = this.chartOptions.series.find((s: any) => s.name === data.value.sensor_name);
+        const sensorId = data.value.sensor_id;
+        const serie: any = this.chartOptions.series.find((s: any) => s.group == sensorId);
+        //console.log(sensorId, serie.name);
         if (serie) {
           serie.data.unshift({ x: timestamp, y: Number(data.value.value) });
           if (serie.data.length > 100) {
             serie.data.pop();
           }
-        }
-        if (this.chart && this.chart.updateSeries) {
-          this.chart.updateSeries(this.chartOptions.series);
+          if (this.chart && this.chart.updateSeries) {
+            this.chart.updateSeries(this.chartOptions.series);
+          }
         }
       });
     });

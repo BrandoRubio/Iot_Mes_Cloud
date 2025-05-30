@@ -188,8 +188,7 @@ export class HomePage implements OnInit {
         index: index,
         id: item.id,
         name: item.name,
-        jsonParams: { ...item.parameters, id: item.id, name: item.name },
-        refreshData: true
+        jsonParams: { ...item.parameters, id: item.id, name: item.name }
       }));
     })
     this.api.Get("/devices/1221").then((response: any) => {
