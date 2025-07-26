@@ -1,3 +1,47 @@
+:host {
+    --chart-primary: #DAA520;
+    --chart-secondary: #1a1a1a;
+    --chart-accent: #4A90E2;
+    --chart-bg: rgba(255, 255, 255, 0.02);
+    --chart-border: rgba(218, 165, 32, 0.2);
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+}
+
 ion-select::part(label) {
     color: var(--ion-color-primary);
+}
+
+ion-card-header {
+    background: var(--thermometer-primary);
+    padding: var(--spacing-md);
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+
+ion-card-content {
+    padding: var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.card-title {
+    color: #000;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xs);
+
+    ion-icon {
+        font-size: 1.3rem;
+    }
 }

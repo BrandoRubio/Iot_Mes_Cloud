@@ -183,7 +183,7 @@ export class HomePage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.api.Get("/widgets/1221").then((response: any) => {
+    /*this.api.Get("/widgets/1221").then((response: any) => {
       this.widgets = response.data.dashboards.map((item: any, index: number) => ({
         index: index,
         id: item.id,
@@ -195,7 +195,7 @@ export class HomePage implements OnInit {
       this.devices = response.data
       this.newWidgetData.device = response.data[0].deviceId + ""
       //console.log(response.data[0].deviceId);
-    })
+    })*/
     /*this.api.GetTEST().then((response: any) => {
       console.log(response);
       

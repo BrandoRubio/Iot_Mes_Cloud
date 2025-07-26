@@ -46,6 +46,8 @@ export class SplineComponent implements OnInit {
   devices: any
   isModalOpen = false;
   showChart: boolean = true;
+  private conexionesLocales: { [sensorId: string]: WebSocket } = {};
+  isPaused = false;
   constructor(private changeDetector: ChangeDetectorRef,
     private ws: WebSocketService,
     private api: ApiService) {
@@ -87,18 +89,19 @@ export class SplineComponent implements OnInit {
         enabled: false
       },
       stroke: {
-        curve: "smooth"
+        curve: "smooth",
+        width: 2
       },
       xaxis: {
         type: "datetime",
         labels: {
           datetimeUTC: false,
-          format: "hh:mm"
+          format: "dd/MM/yy hh:mm"
         }
       },
       yaxis: {
-        min: 20,  // Valor mínimo en el eje Y
-        max: 70,  // Valor máximo en el eje Y
+        /*min: 20,  // Valor mínimo en el eje Y
+        max: 70,  // Valor máximo en el eje Y*/
       },
       tooltip: {
         x: {
@@ -119,15 +122,20 @@ export class SplineComponent implements OnInit {
       this.chart?.updateOptions(this.chartOptions);
     }
     this.loadSensorData().then(() => {
-      this.startSuscripcions();
+      this.startSubscriptions();
     });
   }
 
   async loadSensorData() {
+    const now = new Date();
+    const nowDate = now.toISOString().slice(0, 19); // "YYYY-MM-DDTHH:mm:ss"
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    midnight.setDate(midnight.getDate() - 3);
+    const result = midnight.toISOString().slice(0, 19);
     const sensores = this.widgetData.sensors;
     const seriesData = await Promise.all(
       sensores.map((sensor: any) =>
-        this.api.Get(`/sensorData/${sensor.id}?start=2025-05-28T00:00:00&end=2025-05-30T00:00:00`).then((response: any) => ({
+        this.api.Get('/sensorData/' + sensor.id + '?start=' + result + '&end=' + nowDate).then((response: any) => ({
           color: sensor.color,
           group: sensor.id, // ID único
           name: response.data.sensor,
@@ -139,19 +147,20 @@ export class SplineComponent implements OnInit {
       )
     );
     this.chartOptions.series = seriesData;
+    this.ajustarYaxis(); // ⬅️ aquí
     if (this.chart && this.chart.updateOptions) {
       this.chart.updateOptions(this.chartOptions);
     }
   }
-  startSuscripcions() {
+  startSubscriptions() {
     const sensores = this.widgetData.sensors;
     sensores.forEach((sensor: any) => {
       const sensor_id = sensor.id;
       this.ws.suscribe(sensor_id, (data) => {
+        if (this.isPaused) return;
         const timestamp = new Date(data.value.time).getTime();
         const sensorId = data.value.sensor_id;
         const serie: any = this.chartOptions.series.find((s: any) => s.group == sensorId);
-        //console.log(sensorId, serie.name);
         if (serie) {
           serie.data.unshift({ x: timestamp, y: Number(data.value.value) });
           if (serie.data.length > 100) {
@@ -159,10 +168,62 @@ export class SplineComponent implements OnInit {
           }
           if (this.chart && this.chart.updateSeries) {
             this.chart.updateSeries(this.chartOptions.series);
+            this.ajustarYaxis();
           }
+        }
+      }).then((ws) => {
+        this.conexionesLocales[sensor_id] = ws;
+      }).catch(err => {
+        console.error('Error suscribiendo a sensor', sensor_id, err);
+      });
+    });
+  }
+  stopSubscriptions() {
+    for (const sensorId in this.conexionesLocales) {
+      const ws = this.conexionesLocales[sensorId];
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        console.log("unsuscribed");
+
+        ws.send(JSON.stringify({ type: 'unsuscribe', sensor_id: sensorId }));
+        ws.close();
+      }
+    }
+    this.conexionesLocales = {};
+  }
+  ajustarYaxis() {
+    const allYValues: number[] = [];
+
+    this.chartOptions.series.forEach((serie: any) => {
+      serie.data.forEach((point: any) => {
+        if (typeof point.y === 'number') {
+          allYValues.push(point.y);
         }
       });
     });
+
+    if (allYValues.length === 0) return;
+
+    const min = Math.min(...allYValues);
+    const max = Math.max(...allYValues);
+
+    const padding = 5;
+
+    const newYaxis = {
+      min: min - padding,
+      max: max + padding
+    };
+
+    this.chartOptions.yaxis = newYaxis;
+
+    if (this.chart && this.chart.updateOptions) {
+      this.chart.updateOptions({
+        yaxis: newYaxis
+      });
+    }
+  }
+
+  ionViewWillLeave() {
+    this.stopSubscriptions()
   }
   async addNewSensor() {
     this.copyWidgetData.sensors.push({ device: "", id: "", color: '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0') })

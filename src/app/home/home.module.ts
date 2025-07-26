@@ -12,7 +12,9 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { HeatmapComponent } from '../components/heatmap/heatmap.component';
 import { SplineComponent } from '../components/spline/spline.component';
 import { BarComponent } from '../components/bar/bar.component';
+import { ThermometerComponent } from '../components/thermometer/thermometer.component';
 import { NgxColorsModule } from 'ngx-colors';
+import { GaugeComponent } from '../components/gauge/gauge.component';
 
 @NgModule({
   imports: [
@@ -25,6 +27,8 @@ import { NgxColorsModule } from 'ngx-colors';
     NgApexchartsModule,
     SplineComponent,
     BarComponent,
+    ThermometerComponent,
+    GaugeComponent,
     NgxColorsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
